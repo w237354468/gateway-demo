@@ -7,7 +7,6 @@
     <modules>
         <module>gateway-resilience4j-service</module>
         <module>gateway-provider-service</module>
-        <module>gateway-provider2-service</module>
         <module>gateway-provider-service2</module>
     </modules>
 
