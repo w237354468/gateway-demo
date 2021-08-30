@@ -8,6 +8,8 @@
         <module>gateway-resilience4j-service</module>
         <module>gateway-provider-service</module>
         <module>gateway-provider-service2</module>
+        <module>gateway-sentinel-service</module>
+        <module>gateway-service</module>
     </modules>
 
     <parent>

@@ -15,20 +15,20 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: provider
-          uri: lb://provider-service
-          predicates:
-            - Path=/echo/** # 路由的前缀 这里一般只配置一个
-          filters:
-            - name: RequestRateLimiter
-              args:
+#        - id: provider
+#          uri: lb://provider-service
+#          predicates:
+#            - Path=/echo/** # 路由的前缀 这里一般只配置一个
+#          filters:
+#            - name: RequestRateLimiter
+#              args:
                 # 令牌桶每秒填充平均速率, 允许用户每秒处理多少个请求。
-                redis-rate-limiter.replenishRate: 2
+#                redis-rate-limiter.replenishRate: 1
                 # 令牌桶的容量，允许在1s内完成的最大请求数。
-                redis-rate-limiter.burstCapacity: 3
-                # 使用SpEL表达式从Spring容器中获取Bean对象, 查看RateLimitConfig实现类中的方法名
-#                key-resolver: "#{@pathKeyResolver}"
-                #key-resolver: "#{@ipKeyResolver}"
+#                redis-rate-limiter.burstCapacity: 2
+                # 使用SpEL表达式从Spring容器中获取Bean对象, 查看RateLimiteConfig实现类中的方法名
+#                key-resolver: '#{@pathKeyResolver}'
+#                key-resolver: '#{@ipKeyResolver}'
                 #key-resolver: "#{@userKeyResolver}"
   redis:
     host: localhost
