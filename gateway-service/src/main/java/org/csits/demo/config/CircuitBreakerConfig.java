@@ -46,7 +46,7 @@ public class CircuitBreakerConfig {
       // 细粒度控制每个路由的回调
       factory.addCircuitBreakerCustomizer(circuitBreaker -> circuitBreaker.getEventPublisher()
               .onError(new NormalFluxErrorConsumer()).onSuccess(new NormalFluxSuccessConsumer()),
-          "provider");
+          "provider-cb");
     };
   }
 
