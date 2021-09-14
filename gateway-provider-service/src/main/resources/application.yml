@@ -1,5 +1,9 @@
 server:
-  port: 8081
+  port: 18085
+  tongweb:
+    license:
+      type: file
+      path: classpath:license.dat
 spring:
   application:
     name: provider-service
@@ -7,3 +11,5 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+#        namespace: dev
+#        group: my-group

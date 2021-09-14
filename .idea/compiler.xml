@@ -10,6 +10,7 @@
         <module name="gateway-provider-service" />
         <module name="gateway-resilience4j-service" />
         <module name="gateway-sentinel-service" />
+        <module name="gateway-admin" />
         <module name="gateway-provider-service2" />
         <module name="gateway-service" />
       </profile>
