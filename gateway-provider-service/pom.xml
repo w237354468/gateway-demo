@@ -35,16 +35,6 @@
             <version>2.x.0.RELEASE_P1</version>
         </dependency>
         <dependency>
-            <groupId>com.tongweb.springboot</groupId>
-            <artifactId>tongweb-spring-boot-websocket</artifactId>
-            <version>2.x.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.tongweb</groupId>
-            <artifactId>tongweb-gmssl</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.tongweb</groupId>
             <artifactId>tongweb-embed</artifactId>
             <version>7.0.E.2_P1</version>

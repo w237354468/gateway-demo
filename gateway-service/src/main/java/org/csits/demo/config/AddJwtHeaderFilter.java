@@ -7,7 +7,6 @@ import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Mono;
 
 @Log4j2
@@ -17,19 +16,15 @@ public class AddJwtHeaderFilter implements GlobalFilter, Ordered {
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
-    Mono<WebSession> sessionMono = exchange.getSession();
-    sessionMono.doOnNext(webSession -> {
-      String jwt = (String) webSession.getAttributes().getOrDefault("JWT", "NULL");
-      log.info("Web Session Jwt : {}", jwt);
+    String jwt = exchange.getSession().map(
+        webSession -> webSession.getAttributeOrDefault("JWT", "NULL")).share().block();
 
-      // Add header
-      ServerHttpRequest mutableReq = exchange.getRequest().mutate().header("Authentication-JWT", jwt)
+    ServerHttpRequest mutableReq = exchange.getRequest().mutate()
+          .header("Authentication-JWT", jwt)
           .build();
-      ServerWebExchange mutableExchange = exchange.mutate().request(mutableReq).build();
+    ServerWebExchange webExchange = exchange.mutate().request(mutableReq).build();
 
-      chain.filter(mutableExchange);
-    }).doOnError(throwable -> log.error(throwable.getMessage()));
-    return Mono.empty();
+    return chain.filter(webExchange);
   }
 
   @Override
