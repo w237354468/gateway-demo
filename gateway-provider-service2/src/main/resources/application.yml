@@ -2,8 +2,12 @@ server:
   port: 8081
 spring:
   application:
-    name: provider-service
+    name: provider-service2
   cloud:
     nacos:
       discovery:
         server-addr: localhost:8848
+
+csits:
+  log:
+    mode: all

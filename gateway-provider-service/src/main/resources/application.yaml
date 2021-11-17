@@ -1,0 +1,17 @@
+#server:
+#  port: 18085
+#
+#spring:
+#  application:
+#    name: provider-service
+#
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: localhost:8848
+#csits:
+#  log:
+#    mode: all
+#logging:
+#  file:
+#    path: ./logs/alllog
