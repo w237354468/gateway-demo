@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.apache.logging.log4j.core.LogAutoConfiguration
+  org.apache.logging.log4j.core.LogAutoConfiguration,\
+  org.apache.logging.log4j.core.aspect.LogRecordAspect

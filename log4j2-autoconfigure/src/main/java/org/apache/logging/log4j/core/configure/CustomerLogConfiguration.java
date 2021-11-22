@@ -9,11 +9,16 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "csits.log")
 public class CustomerLogConfiguration {
 
-    private String mode = "default";
+    private boolean jsonEnable = false;
+
+    private String jsonInfoFilename = "appInfoJson";
+
+    private String jsonWarnFilename = "appWarnJson";
+
+    private String jsonErrorFilename = "appErrorJson";
 
     private String jsonDirName = "json";
 
-    private String defaultDirName = "default";
+    private String fileRollingSize = "200MB";
 
-    private String jsonLogCharset = "utf-8";
 }

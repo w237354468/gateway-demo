@@ -3,7 +3,7 @@ package org.apache.logging.log4j.core.domain;
 import lombok.Data;
 
 @Data
-public class LogInfo {
+public class LogInfo extends DTO {
 
     private String type;
 
@@ -22,6 +22,10 @@ public class LogInfo {
     private UserInfo userInfo;
 
     private String operationTime;
+
+    private Long threadId;
+
+    private String threadName;
 
     private Object msg;
 }

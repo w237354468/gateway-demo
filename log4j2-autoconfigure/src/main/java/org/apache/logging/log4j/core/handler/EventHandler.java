@@ -1,38 +1,37 @@
 package org.apache.logging.log4j.core.handler;
 
 import cn.hutool.core.net.NetUtil;
-import org.apache.logging.log4j.core.LogAutoConfiguration;
+import cn.hutool.core.util.StrUtil;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.constant.ConfigConstant;
 import org.apache.logging.log4j.core.domain.LogInfo;
 import org.apache.logging.log4j.core.domain.TraceInfo;
 import org.apache.logging.log4j.core.domain.UserInfo;
-import org.apache.skywalking.apm.toolkit.trace.TraceContext;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
+import static org.apache.logging.log4j.core.constant.ConfigConstant.*;
+
 public abstract class EventHandler {
 
-    private final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private final String USER_AGENT = "User-Agent";
+    private static final String SERVER_NAME = System.getProperty(SW_AGENT_SERVICE_NAME, DEFAULT_EMPTY_VALUE);
+    private static final String INSTANCE_NAME = System.getProperty(SW_AGENT_INSTANCE, DEFAULT_EMPTY_VALUE);
 
-    private final String serverName;
-    private final String instanceName;
+    private final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     private final String serverIp;
 
     public EventHandler() {
-        this.serverName = System.getProperty("skywalking.agent.service_name", "N/A");
-        this.instanceName = System.getProperty("skywalking.agent.instance", "N/A");
+
         InetAddress address = NetUtil.getLocalhost();
-        serverIp = (null == address) ? "N/A" : address.getHostAddress();
+        serverIp = (null == address) ? DEFAULT_EMPTY_VALUE : address.getHostAddress();
     }
 
+    // json行末换行符
     public String handle(LogEvent event) {
         StringBuilder builder = new StringBuilder();
         handleEvent(event, builder);
@@ -43,39 +42,37 @@ public abstract class EventHandler {
 
     void fillGenericFields(LogInfo logInfo, LogEvent event) {
 
+        ReadOnlyStringMap contextData = event.getContextData();
+        logInfo.setType(contextData.getValue(ConfigConstant.LOG_TYPE));
+
         logInfo.setLevel(event.getLevel().name());
         logInfo.setServerIp(serverIp);
         logInfo.setOperationTime(formatMills(event.getTimeMillis()));
+        logInfo.setThreadId(event.getThreadId());
+        logInfo.setThreadName(event.getThreadName());
 
-        logInfo.setAppName(LogAutoConfiguration.appName);
-        logInfo.setInstanceName(instanceName);
+        logInfo.setAppName(SERVER_NAME);
+        logInfo.setInstanceName(INSTANCE_NAME);
         logInfo.setClassName(event.getLoggerName());
-        logInfo.setTraceInfo(getTraceInfoFromSW());
-        logInfo.setUserInfo(getRequestInfo());
-    }
 
-    private TraceInfo getTraceInfoFromSW() {
-        String traceId = TraceContext.traceId();
-        int spanId = TraceContext.spanId();
-        String segmentId = TraceContext.segmentId();
+        TraceInfo traceInfo = new TraceInfo();
+        traceInfo.setTraceId(contextData.getValue(ConfigConstant.TRACE_ID));
+        traceInfo.setSpanId(contextData.getValue(ConfigConstant.SPAN_ID));
+        traceInfo.setSegmentId(contextData.getValue(ConfigConstant.SEGMENT_ID));
+        logInfo.setTraceInfo(traceInfo);
 
-        return new TraceInfo(traceId, spanId, segmentId);
-    }
-
-    private UserInfo getRequestInfo() {
         UserInfo userInfo = new UserInfo();
+        userInfo.setRemoteIp(getStrOrDefault(contextData, ConfigConstant.REMOTE_IP));
+        userInfo.setRequestUri(getStrOrDefault(contextData, ConfigConstant.REQUEST_URI));
+        userInfo.setUserAgent(getStrOrDefault(contextData, ConfigConstant.USER_AGENT));
+        userInfo.setUsername(getStrOrDefault(contextData, ConfigConstant.USER_NAME));
+        logInfo.setUserInfo(userInfo);
 
-        try {
-            RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-            ServletRequestAttributes requestAttributes = (ServletRequestAttributes) attributes;
-            HttpServletRequest request = requestAttributes.getRequest();
-            userInfo.setRemoteIp(request.getRemoteAddr());
-            userInfo.setRequestUri(request.getRequestURI());
-            userInfo.setUserAgent(request.getHeader(USER_AGENT));
-            userInfo.setUser(request.getUserPrincipal().getName());
-        } catch (Exception ignored) {
-        }
-        return userInfo;
+    }
+
+    private String getStrOrDefault(ReadOnlyStringMap map, String key) {
+        String value = map.getValue(key);
+        return StrUtil.isEmpty(value) ? DEFAULT_EMPTY_VALUE : value;
     }
 
     private String formatMills(long timeMills) {

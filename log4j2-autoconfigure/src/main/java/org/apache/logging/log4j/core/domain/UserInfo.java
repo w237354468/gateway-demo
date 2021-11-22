@@ -11,5 +11,5 @@ public class UserInfo {
 
     private String userAgent;
 
-    private String user;
+    private String username;
 }

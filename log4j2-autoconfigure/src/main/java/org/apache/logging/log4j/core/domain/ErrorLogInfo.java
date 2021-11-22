@@ -11,8 +11,4 @@ public class ErrorLogInfo extends LogInfo {
 
     private String errorName;
 
-    private Long ThreadId;
-
-    private String threadName;
-
 }

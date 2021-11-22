@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-@Plugin(name = "CsitsJsonLayout", category = Node.CATEGORY, elementType = Layout.ELEMENT_TYPE, printObject = true)
+@Plugin(name = "CustomerJsonLayout", category = Node.CATEGORY, elementType = Layout.ELEMENT_TYPE, printObject = true)
 public final class CustomerJsonLayout extends AbstractStringLayout {
 
     static final String CONTENT_TYPE = "application/json";

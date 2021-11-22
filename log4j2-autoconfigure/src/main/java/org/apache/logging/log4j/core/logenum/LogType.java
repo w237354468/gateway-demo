@@ -6,7 +6,11 @@ public enum LogType {
 
     LOG_RECORD("LOG_RECORD"),
 
-    LOG_ERROR("LOG_ERROR");
+    LOG_ERROR("LOG_ERROR"),
+
+    LOG_SCHEDULER_TASK("LOG_SCHEDULER_TASK"),
+
+    LOG_MESSAGE_CONSUMER("LOG_MESSAGE_CONSUME");
 
     private final String typeName;
 

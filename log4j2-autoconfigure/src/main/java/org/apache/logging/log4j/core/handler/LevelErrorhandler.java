@@ -24,8 +24,6 @@ public class LevelErrorhandler extends EventHandler {
             errorLogInfo.setType(LogType.LOG_ERROR.getTypeName());
 
             errorLogInfo.setErrorName(thrownProxy.getName());
-            errorLogInfo.setThreadName(event.getThreadName());
-            errorLogInfo.setThreadId(event.getThreadId());
             errorLogInfo.setErrorMsg(thrownProxy.getMessage());
             errorLogInfo.setErrorStack(parseExceptionToString(throwable));
         }

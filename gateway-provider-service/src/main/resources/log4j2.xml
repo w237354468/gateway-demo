@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="INFO">
     <Properties>
-        <property name="LOG_DIR">${bundle:application:logging.file.path}</property>
+        <property name="LOG_DIR">${bundle:application:logging.file.path:-./logs}</property>
+        <property name="DEFAULT_PATTERN" value="%d [%t] %-5level %logger{36} - %msg%n"/>
     </Properties>
     <Appenders>
+
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%t] %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="${DEFAULT_PATTERN}"/>
         </Console>
+
         <RollingFile name="RollingFileInfo" fileName="${LOG_DIR}/app.log"
                      filePattern="${LOG_DIR}/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
             <PatternLayout>
-                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+                <Pattern>${DEFAULT_PATTERN}</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
@@ -18,11 +21,67 @@
             </Policies>
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
+
+        <!-- json-->
+        <RollingFile name="RollingFileInfoJson" fileName="${LOG_DIR}/json/appInfo.log"
+                     filePattern="${LOG_DIR}/json/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+            <CustomerJsonLayout/>
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="RollingFileWarnJson" fileName="${LOG_DIR}/json/appWarn.log"
+                     filePattern="${LOG_DIR}/json/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+            <CustomerJsonLayout/>
+            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="RollingFileErrorJson" fileName="${LOG_DIR}/json/appError.log"
+                     filePattern="${LOG_DIR}/json/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+            <CustomerJsonLayout/>
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+        <Async name="AsyncConsole">
+            <Appender-Ref ref="Console"/>
+        </Async>
+
+        <Async name="AsyncRollingFileInfo">
+            <Appender-Ref ref="RollingFileInfo"/>
+        </Async>
+
+        <Async name="AsyncRollingFileInfoJson">
+            <Appender-Ref ref="RollingFileInfoJson"/>
+        </Async>
+
+        <Async name="AsyncRollingFileWarnJson">
+            <Appender-Ref ref="RollingFileWarnJson"/>
+        </Async>
+
+        <Async name="AsyncRollingFileErrorJson">
+            <Appender-Ref ref="RollingFileErrorJson"/>
+        </Async>
+
     </Appenders>
     <Loggers>
-        <Root level="INFO">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="RollingFileInfo"/>
-        </Root>
+        <AsyncRoot level="INFO">
+            <AppenderRef ref="AsyncConsole"/>
+            <AppenderRef ref="AsyncRollingFileInfo"/>
+            <AppenderRef ref="AsyncRollingFileInfoJson"/>
+            <AppenderRef ref="AsyncRollingFileWarnJson"/>
+            <AppenderRef ref="AsyncRollingFileErrorJson"/>
+        </AsyncRoot>
     </Loggers>
 </Configuration>

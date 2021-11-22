@@ -10,4 +10,4 @@ spring:
 
 csits:
   log:
-    mode: all
+    json-enable: true
